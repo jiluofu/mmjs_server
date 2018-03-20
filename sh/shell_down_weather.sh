@@ -22,8 +22,12 @@ ffmpeg -y -i $output/$name -ss 00:31:30 -to 00:36:30 -acodec copy $output/$weath
 rm -rf $output/$name
 
 weather_file_name=$time"_专家聊天气.mp3"
+weather_file_name_wav=$time"_专家聊天气.wav"
 ffmpeg -y -i $output/$weather_name  -f mp3 -vn $output/$weather_file_name
+#ffmpeg -y -i $output/$weather_name  -f wav $output/$weather_file_name_wav
 rm -rf $output/$weather_name
+
+echo $time"_专家聊天气" | mailx -s $time"_专家聊天气" -a $output/$weather_file_name  1077246@qq.com
 
  
 
