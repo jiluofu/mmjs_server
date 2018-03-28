@@ -3,5 +3,5 @@
 *.out
 .DS*
 *.mp3
-*.wav
+gohttps_loader/static/**
 *.amr
