@@ -4,6 +4,7 @@ import sys
 import subprocess
 import re
 import os
+import time
 
 import librosa
 # import tkinter
@@ -41,10 +42,29 @@ arr = [
 
 # ]
 
-arr = ['20180328']
+arr = ['20180329']
+# 20180329 33s 114s 306s
 
-#path = '/Users/zhuxu/Downloads'
-path = '/home/zhuxu/mmjs_server/gohttps_loader/static/weather'
+# pre = '/Users/zhuxu'
+# path = pre + '/Downloads'
+# shellPath = pre + '/Documents/sh'
+
+pre = '/home/zhuxu'
+path = pre + '/mmjs_server/gohttps_loader/static/weather'
+shellPath = pre + '/mmjs_server/sh'
+
+
+
+def getMFCC(fileName, start = 0, len = None):
+	y, sr = librosa.load(fileName, offset = start, duration = len)
+	
+	try:
+		mfcc = librosa.feature.mfcc(y, sr)
+	except:
+		if y.size == 0:
+			return None
+	return mfcc
+
 
 def getDistance(model, sample):
 	
@@ -61,12 +81,12 @@ def getDistance(model, sample):
 	# librosa.display.specshow(mfcc1)
 
 	# plt.subplot(1, 2, 2)
-	mfcc2 = librosa.feature.mfcc(y2, sr2)
+	mfcc2 = librosa.feature.mfcc(y2,sr2)
 	# librosa.display.specshow(mfcc2)
 
 	# dist, cost, path = dtw(mfcc1.T, mfcc2.T)
 	dist, cost, acc_cost, path = dtw(mfcc1.T, mfcc2.T, dist=lambda x, y: norm(x - y, ord=1))
-	# print("The normalized distance between the two : ",dist)   # 0 for similar audios 
+	print("****The normalized distance between the two : ",dist)   # 0 for similar audios 
 
 	# plt.imshow(cost.T, origin='lower', cmap=plt.get_cmap('gray'), interpolation='nearest')
 	# plt.plot(path[0], path[1], 'w')   #creating plot for DTW
@@ -75,7 +95,57 @@ def getDistance(model, sample):
 
 	return dist
 
-def getSecPos(date, title, modelName, modelSecLength, searchStart = 0, searchEnd = 80):
+def getDist(mfcc1, mfcc2):
+
+	if mfcc1 is None:
+		return -1
+	dist, cost, acc_cost, pathmfcc = dtw(mfcc1.T, mfcc2.T, dist=lambda x, y: norm(x - y, ord=1))
+	return dist
+
+def getSecPosPrecise(date, modelMFCC, sec, modelSecLength, dist):
+
+	distArr = []
+	distDict = {}
+
+	stopAfterNum = 2
+	closeToTarget = False
+	modelSecLength = modelSecLength / 2
+
+	searchStart = int(sec - 2 * modelSecLength)
+	if searchStart < 0:
+		searchStart = 0
+	searchEnd = int(sec + 2 * modelSecLength)
+
+	for i in range(searchStart, searchEnd, 3):
+		
+		sampleName = path + '/' + date + '_专家聊天气.wav'
+		mfccSam = getMFCC(sampleName, i, modelSecLength)
+		dist = getDist(mfccSam, modelMFCC)
+		if dist < 0:
+			break;
+		
+
+		distArr.append(dist)
+		distDict[dist] = i
+		
+		print('presice sec:' + str(i) + ',dist:' + str(dist))
+		if int(min(distArr)) < 70:
+			print('presice ***' + str(int(min(distArr))))
+			closeToTarget = True
+			break;
+		if closeToTarget:
+			if stopAfterNum == 0:
+				break
+			else:
+				stopAfterNum = stopAfterNum - 1
+
+	distMin = min(distArr)
+	print('precise min dist:' + str(distMin))
+	print('precise min sec:' + str(distDict[distMin]))
+
+	return distDict[distMin]
+
+def getSecPos(date, title, modelMFCC, modelName, modelSecLength, searchStart = 0, searchEnd = 100):
 
 	
 	distArr = []
@@ -84,24 +154,43 @@ def getSecPos(date, title, modelName, modelSecLength, searchStart = 0, searchEnd
 	stopAfterNum = 2
 	closeToTarget = False
 
-	for i in range(searchStart, searchEnd, 3):
-		sampleName = path + '/wout/' + date + '_' + title + str(i) + '.wav'
-		subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(i) + ' -to ' + str(i + modelSecLength) + '  -f wav ' + sampleName, shell=True)
-		dist = getDistance(modelName, sampleName)
+	
+
+	for i in range(searchStart, searchEnd, 20):
+		
+		# sampleName = path + '/wout/' + date + '_' + title + str(i) + '.wav'
+		# subprocess.check_output('ffmpeg -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(i) + ' -to ' + str(i + modelSecLength) + '  -f wav ' + sampleName, shell=True)
+		# dist = getDistance(modelName, sampleName)
+		
+		sampleName = path + '/' + date + '_专家聊天气.wav'
+		mfccSam = getMFCC(sampleName, i, modelSecLength)
+		dist = getDist(mfccSam, modelMFCC)
+		if dist < 0:
+			break
+			
+
 		distArr.append(dist)
 		distDict[dist] = i
 		# print(min(distArr))
 		print('sec:' + str(i) + ',dist:' + str(dist))
-		if min(distArr) < 80:
+		if int(min(distArr)) < 80:
+			print('***' + str(int(min(distArr))))
 			closeToTarget = True
+			break;
 		if closeToTarget:
 			if stopAfterNum == 0:
 				break
 			else:
 				stopAfterNum = stopAfterNum - 1
+
 	distMin = min(distArr)
 	print('min dist:' + str(distMin))
 	print('min sec:' + str(distDict[distMin]))
+	secPrecise = getSecPosPrecise(date, modelMFCC, distDict[distMin], modelSecLength, distMin)
+	if secPrecise > 0:
+		return secPrecise
+	else:
+		return distDict[distMin]
 
 	#a = subprocess.check_output('rm -rf ' + path + '/wout/*', shell=True)
 	return distDict[distMin]
@@ -110,11 +199,15 @@ def getWeather(date):
 
 	# a = subprocess.check_output('./shell_down_weather.sh ' + date, shell=True)
 	a = subprocess.check_output('rm -rf ' + path + '/wout/*', shell=True)
-	secTq = getSecPos(date, '天气预报', './model_tq.wav', 9, 0) + 1
+	secTq = getSecPos(date, '天气预报', mfccTQ, shellPath + '/model_tq.wav', 9 * 2, 0, 200) + 1
 	output(date, secTq, 400, '天气预报')
 
-	secZj = getSecPos(date, '专家聊天气', './model_zhuanjia.wav', 12, secTq + 9 + 20, secTq + 9 + 30 + 200)
-	output(date, secZj, 350, '专家聊天气')
+	secZj = getSecPos(date, '专家聊天气', mfccZJ, shellPath + '/model_zhuanjia.wav', 12 * 2, secTq + 9 + 20, secTq + 9 + 30 + 200)
+	secFinish = getSecPos(date, '专家聊天气', mfccFIN, shellPath + '/model_finish.wav', 7 * 2, secTq + 9 + 20 + 50, secTq + 9 + 30 + 500)
+	if secFinish > secZj and (secFinish - secZj - 10 < 350):
+		output(date, secZj, secFinish - secZj - 10, '专家聊天气')
+	else:
+		output(date, secZj, 350, '专家聊天气')
 	
 def output(date, secStart, secLength, name):
 
@@ -126,12 +219,32 @@ def output(date, secStart, secLength, name):
 	#subprocess.check_output('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com', shell=True)
 	os.system('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com')
 	
-
+start = time.clock()
+# 天气开始
+mfccTQ = getMFCC(shellPath + '/model_tq.wav')
+# 专家开始
+mfccZJ = getMFCC(shellPath + '/model_zhuanjia.wav')
+# 专家结束
+mfccFIN = getMFCC(shellPath + '/model_finish.wav')
+# print(mfccFIN)
 
 if len(sys.argv) == 2 and sys.argv[1] != '':
 	getWeather(sys.argv[1])
 else:
 	for i in range(0, len(arr)):
 		getWeather(arr[i])
+
+elapsed = (time.clock() - start)
+print("Time used:", elapsed)
+
+
+
+
+
+
+
+
+
+
 
 
