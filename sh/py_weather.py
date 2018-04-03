@@ -110,11 +110,16 @@ def getSecPosPrecise(date, modelMFCC, sec, modelSecLength, dist):
 	stopAfterNum = 2
 	closeToTarget = False
 	modelSecLength = modelSecLength / 2
+	multiNum = 1
+	if dist > 100:
+		multiNum = 2
+	else:
+		multiNum = 1.2
 
-	searchStart = int(sec - 2 * modelSecLength)
+	searchStart = int(sec - multiNum * modelSecLength)
 	if searchStart < 0:
 		searchStart = 0
-	searchEnd = int(sec + 2 * modelSecLength)
+	searchEnd = int(sec + multiNum * modelSecLength)
 
 	for i in range(searchStart, searchEnd, 3):
 		
@@ -132,7 +137,7 @@ def getSecPosPrecise(date, modelMFCC, sec, modelSecLength, dist):
 		if int(min(distArr)) < 70:
 			print('presice ***' + str(int(min(distArr))))
 			closeToTarget = True
-			break;
+			# break;
 		if closeToTarget:
 			if stopAfterNum == 0:
 				break
@@ -156,7 +161,7 @@ def getSecPos(date, title, modelMFCC, modelName, modelSecLength, searchStart = 0
 
 	
 
-	for i in range(searchStart, searchEnd, 20):
+	for i in range(searchStart, searchEnd, modelSecLength):
 		
 		# sampleName = path + '/wout/' + date + '_' + title + str(i) + '.wav'
 		# subprocess.check_output('ffmpeg -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(i) + ' -to ' + str(i + modelSecLength) + '  -f wav ' + sampleName, shell=True)
@@ -203,8 +208,9 @@ def getWeather(date):
 	output(date, secTq, 400, '天气预报')
 
 	secZj = getSecPos(date, '专家聊天气', mfccZJ, shellPath + '/model_zhuanjia.wav', 12 * 2, secTq + 9 + 20, secTq + 9 + 30 + 200)
-	secFinish = getSecPos(date, '专家聊天气', mfccFIN, shellPath + '/model_finish.wav', 7 * 2, secTq + 9 + 20 + 50, secTq + 9 + 30 + 500)
+	secFinish = getSecPos(date, '专家聊天气', mfccFIN, shellPath + '/model_finish.wav', 7 * 2, secZj + 12 + 20, secZj + 12 + 30 + 500)
 	if secFinish > secZj and (secFinish - secZj - 10 < 350):
+		print('****find secFinish:' + str(secFinish))
 		output(date, secZj, secFinish - secZj - 10, '专家聊天气')
 	else:
 		output(date, secZj, 350, '专家聊天气')
