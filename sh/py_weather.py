@@ -161,7 +161,7 @@ def getSecPos(date, title, modelMFCC, modelName, modelSecLength, searchStart = 0
 
 	
 
-	for i in range(searchStart, searchEnd, modelSecLength):
+	for i in range(searchStart, searchEnd, int(modelSecLength / 2)):
 		
 		# sampleName = path + '/wout/' + date + '_' + title + str(i) + '.wav'
 		# subprocess.check_output('ffmpeg -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(i) + ' -to ' + str(i + modelSecLength) + '  -f wav ' + sampleName, shell=True)
@@ -178,7 +178,7 @@ def getSecPos(date, title, modelMFCC, modelName, modelSecLength, searchStart = 0
 		distDict[dist] = i
 		# print(min(distArr))
 		print('sec:' + str(i) + ',dist:' + str(dist))
-		if int(min(distArr)) < 80:
+		if int(min(distArr)) < 90:
 			print('***' + str(int(min(distArr))))
 			closeToTarget = True
 			break;
@@ -204,11 +204,11 @@ def getWeather(date):
 
 	# a = subprocess.check_output('./shell_down_weather.sh ' + date, shell=True)
 	a = subprocess.check_output('rm -rf ' + path + '/wout/*', shell=True)
-	secTq = getSecPos(date, '天气预报', mfccTQ, shellPath + '/model_tq.wav', 9 * 2, 0, 200) + 1
+	secTq = getSecPos(date, '天气预报', mfccTQ, shellPath + '/model_tq.wav', 9, 0, 200) + 1
 	output(date, secTq, 400, '天气预报')
 
-	secZj = getSecPos(date, '专家聊天气', mfccZJ, shellPath + '/model_zhuanjia.wav', 12 * 2, secTq + 9 + 20, secTq + 9 + 30 + 200)
-	secFinish = getSecPos(date, '专家聊天气', mfccFIN, shellPath + '/model_finish.wav', 7 * 2, secZj + 12 + 20, secZj + 12 + 30 + 500)
+	secZj = getSecPos(date, '专家聊天气', mfccZJ, shellPath + '/model_zhuanjia.wav', 12, secTq + 9 + 20, secTq + 9 + 30 + 200)
+	secFinish = getSecPos(date, '专家聊天气', mfccFIN, shellPath + '/model_finish.wav', 7, secZj + 12 + 20, secZj + 12 + 30 + 500)
 	if secFinish > secZj and (secFinish - secZj - 10 < 350):
 		print('****find secFinish:' + str(secFinish))
 		output(date, secZj, secFinish - secZj - 10, '专家聊天气')
@@ -231,7 +231,7 @@ mfccTQ = getMFCC(shellPath + '/model_tq.wav')
 # 专家开始
 mfccZJ = getMFCC(shellPath + '/model_zhuanjia.wav')
 # 专家结束
-mfccFIN = getMFCC(shellPath + '/model_finish.wav')
+mfccFIN = getMFCC(shellPath + '/model_finish_nv.wav')
 # print(mfccFIN)
 
 if len(sys.argv) == 2 and sys.argv[1] != '':
