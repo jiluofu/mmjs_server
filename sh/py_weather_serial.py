@@ -189,6 +189,9 @@ def getSecPosSerial(date, title, modelMFCC, modelSecLength, searchStart = 0, sea
 
 	for i in range(searchStart, searchEnd, int(modelSecLength / 3)):
 		
+		if i + modelSecLength > secs:
+			break;
+
 		sampleName = path + '/' + date + '_专家聊天气.wav'
 		mfccSam = getMFCC(sampleName, i, modelSecLength)
 		dist = getDist(mfccSam, modelMFCC)
@@ -211,16 +214,32 @@ def getSecPosSerial(date, title, modelMFCC, modelSecLength, searchStart = 0, sea
 	
 	return distDict[distMin]
 
+def trim(str):
+    pattern = r'(^([\s])+)|(([\s])+$)'
+    res = re.sub(pattern, '', str)
+    return res;
+
 def getWeather(date):
+
+	audioFile = path + '/' + date + '_专家聊天气.wav'
+	res = subprocess.check_output('ffprobe -i ' + audioFile + ' -show_entries stream=codec_type,duration -of compact=p=0:nk=1|grep audio', shell=True)
+	res = trim(res.decode())
+	res = res.split('|')
+	global secs
+	secs = int(float(res[1]))
+	print('secs:' + str(secs))
 
 	a = subprocess.check_output('rm -rf ' + path + '/wout/*', shell=True)
 
-	secZj = getSecPosSerial(date, '专家聊天气', mfccZJ, 12, 0, 930)
-	secFinish = getSecPosSerial(date, '专家聊天气', mfccFIN, 7, secZj, 930)
-	if secFinish > secZj and (secFinish - secZj - 10 > 100):
-		output(date, secZj, secFinish - secZj - 10, '专家聊天气')
-	else:
-		output(date, secZj, 350, '专家聊天气')
+	secZj = getSecPosSerial(date, '专家聊天气', mfccZJ, 12, 0, secs)
+	secFinish = getSecPosSerial(date, '专家聊天气', mfccFIN, 7, secZj, secs)
+	print('secZj:' + str(secZj))
+	print('secFinish:' + str(secFinish))
+	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
+	# if secFinish > secZj and (secFinish - secZj - 10 > 100):
+	# 	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
+	# else:
+	# 	output(date, secZj, 350, '专家聊天气')
 	
 def output(date, secStart, secLength, name):
 
@@ -238,7 +257,7 @@ start = time.clock()
 # 专家开始
 mfccZJ = getMFCC(shellPath + '/model_zhuanjia.wav')
 # 专家结束
-mfccFIN = getMFCC(shellPath + '/model_finish_nv.wav')
+mfccFIN = getMFCC(shellPath + '/model_finish.wav')
 # print(mfccFIN)
 
 if len(sys.argv) == 2 and sys.argv[1] != '':
