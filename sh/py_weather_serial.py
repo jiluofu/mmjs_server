@@ -12,6 +12,7 @@ import librosa
 from dtw import dtw
 from numpy.linalg import norm
 
+
 arr = [
 	'20180203',
 	'20180205',

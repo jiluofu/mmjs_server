@@ -40,10 +40,9 @@ ffmpeg -y -i $output/$weather_name  -f mp3 -vn $output/$weather_file_name
 ffmpeg -y -i $output/$weather_name  -f wav $output/$weather_file_name_wav
 rm -rf $output/$weather_name
 
-echo $time"_专家聊天气" | mailx -s $time"_天气和专家" -a $output/$weather_file_name  1077246@qq.com
 /home/zhuxu/mmjs_server/sh/py_weather_serial.py $time
+echo $time"_专家聊天气" | mailx -s $time"_天气和专家" -a $output/$weather_file_name  1077246@qq.com
 
  
-
 
 
