@@ -19,7 +19,7 @@ echo $name
 # wget -O $output/$name $url
 weather_name=$time"_weather.mp4"
 echo $weather_name
-ffmpeg -y -i $url -ss 00:00:00 -to 00:15:30 $output/$weather_name
+ffmpeg -y -i $url -ss 00:00:00 -to 00:20:30 $output/$weather_name
 
 
 # # 下载回放
