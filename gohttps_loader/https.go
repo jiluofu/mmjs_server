@@ -167,6 +167,7 @@ func main() {
     http.Handle("/imgs/", http.FileServer(http.Dir("static")))
     http.Handle("/audios/", http.FileServer(http.Dir("static")))
     http.Handle("/weather/", http.FileServer(http.Dir("static")))
+    http.Handle("/weather/output/", http.FileServer(http.Dir("static")))
     http.HandleFunc("/", handler)
  
 
