@@ -19,7 +19,7 @@ echo $name
 # wget -O $output/$name $url
 weather_name=$time"_weather.mp4"
 echo $weather_name
-ffmpeg -y -i $url -ss 00:00:00 -to 00:20:30 $output/$weather_name
+ffmpeg -y -i $url -t 2400 -rtbufsize 15M  $output/$weather_name
 
 
 # # 下载回放
@@ -38,7 +38,7 @@ weather_file_name=$time"_专家聊天气.mp3"
 weather_file_name_wav=$time"_专家聊天气.wav"
 ffmpeg -y -i $output/$weather_name  -f mp3 -vn $output/$weather_file_name
 ffmpeg -y -i $output/$weather_name  -f wav $output/$weather_file_name_wav
-rm -rf $output/$weather_name
+#rm -rf $output/$weather_name
 
 /home/zhuxu/mmjs_server/sh/py_weather_serial.py $time
 echo $time"_专家聊天气" | mailx -s $time"_天气和专家" -a $output/$weather_file_name  1077246@qq.com

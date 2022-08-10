@@ -93,7 +93,7 @@ def getSecPosPrecise(date, modelMFCC, sec, modelSecLength, dist):
 	closeToTarget = False
 	modelSecLength = modelSecLength / 2
 	multiNum = 1
-	if dist > 100:
+	if dist > 70:
 		multiNum = 2
 	else:
 		multiNum = 1.2
@@ -116,7 +116,7 @@ def getSecPosPrecise(date, modelMFCC, sec, modelSecLength, dist):
 		distDict[dist] = i
 		
 		print('presice sec:' + str(i) + ',dist:' + str(dist))
-		if int(min(distArr)) < 70:
+		if int(min(distArr)) < 100:
 			print('presice ***' + str(int(min(distArr))))
 			closeToTarget = True
 			# break;
