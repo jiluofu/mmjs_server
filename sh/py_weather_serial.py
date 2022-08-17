@@ -232,11 +232,12 @@ def getWeather(date):
 
 	a = subprocess.check_output('rm -rf ' + path + '/wout/*', shell=True)
 
-	secZj = getSecPosSerial(date, '专家聊天气', mfccZJ, 12, 0, secs)
-	secFinish = getSecPosSerial(date, '专家聊天气', mfccFIN, 7, secZj, secs)
+	secZj = getSecPosSerial(date, '专家聊天气', mfccZJ, 7, 0, secs)
+	#secFinish = getSecPosSerial(date, '专家聊天气', mfccFIN, 7, secZj, secs)
+	secFinish = secs
 	print('secZj:' + str(secZj))
 	print('secFinish:' + str(secFinish))
-	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
+	output(date, secZj, secFinish - secZj, '专家聊天气')
 	# if secFinish > secZj and (secFinish - secZj - 10 > 100):
 	# 	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
 	# else:
