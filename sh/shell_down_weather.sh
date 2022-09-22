@@ -12,7 +12,7 @@ output="/home/zhuxu/mmjs_server/gohttps_loader/static/weather"
 
 # 下载直播
 # ffmpeg -y -i http://audiolive.rbc.cn:1935/live/fm1039/96K/tzwj_video.m3u8 -ss 0 -to 120  test.mp4
-url="http://audiolive.rbc.cn:1935/live/fm1039/96K/tzwj_video.m3u8"
+url="https://rtmp-push.tingtingfm.com/bjradio/fm1039.m3u8?auth_key=1664674952-rQ4VPfrt-0-58a452c630a1b9e152a0b165163ff6a7"
 name=$time"_ylct.mp4"
 echo $url
 echo $name
