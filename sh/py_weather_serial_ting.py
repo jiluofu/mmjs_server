@@ -109,7 +109,7 @@ def getSecPosPrecise(date, modelMFCC, sec, modelSecLength, dist):
 
 	for i in range(searchStart, searchEnd, 3):
 		
-		sampleName = path + '/' + date + '_专家聊天气.wav'
+		sampleName = path + '/' + date + '_weather.wav'
 		mfccSam = getMFCC(sampleName, i, modelSecLength)
 		dist = getDist(mfccSam, modelMFCC)
 		if dist < 0:
@@ -197,7 +197,7 @@ def getSecPosSerial(date, title, modelMFCC, modelSecLength, searchStart = 0, sea
 		if i + modelSecLength > secs:
 			break;
 
-		sampleName = path + '/' + date + '_专家聊天气.wav'
+		sampleName = path + '/' + date + '_weather.wav'
 		mfccSam = getMFCC(sampleName, i, modelSecLength)
 		dist = getDist(mfccSam, modelMFCC)
 		if dist < 0:
@@ -231,14 +231,14 @@ def getHistoryRes(date):
     jsondata = response.text
     play_url = json.loads(jsondata)['data']['list'][0]['play_url']
     print(play_url)
-    audioFile = path + '/' + date + '_专家聊天气.mp4'
+    audioFile = path + '/' + date + '_weather.mp4'
     print(audioFile)
     wget.download(play_url, out=audioFile)
     exit()
 
 def getWeather(date):
 
-	audioFile = path + '/' + date + '_专家聊天气.wav'
+	audioFile = path + '/' + date + '_weather.wav'
 	res = subprocess.check_output('ffprobe -i ' + audioFile + ' -show_entries stream=codec_type,duration -of compact=p=0:nk=1|grep audio', shell=True)
 	res = trim(res.decode())
 	res = res.split('|')
@@ -248,11 +248,11 @@ def getWeather(date):
 
 	a = subprocess.check_output('rm -rf ' + path + '/wout/*', shell=True)
 
-	secZj = getSecPosSerial(date, '专家聊天气', mfccZJ, 12, 0, secs)
-	secFinish = getSecPosSerial(date, '专家聊天气', mfccFIN, 7, secZj, secs)
+	secZj = getSecPosSerial(date, 'weather', mfccZJ, 12, 0, secs)
+	secFinish = getSecPosSerial(date, 'weather', mfccFIN, 7, secZj, secs)
 	print('secZj:' + str(secZj))
 	print('secFinish:' + str(secFinish))
-	output(date, secZj, secFinish - secZj + 10, '专家聊天气')
+	output(date, secZj, secFinish - secZj + 10, 'weather')
 	# if secFinish > secZj and (secFinish - secZj - 10 > 100):
 	# 	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
 	# else:
@@ -262,8 +262,8 @@ def output(date, secStart, secLength, name):
 
 	outputName = path + '/output/' + date + '_' + name + '.wav'
 	outputNameMp3 = path + '/output/' + date + '_' + name + '.mp3'
-	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -f wav ' + outputName, shell=True)
-	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -f mp3 ' + outputNameMp3, shell=True)
+	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_weather.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -f wav ' + outputName, shell=True)
+	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_weather.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -f mp3 ' + outputNameMp3, shell=True)
 	title = date + '_' + name
 	#subprocess.check_output('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com', shell=True)
 	os.system('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com')

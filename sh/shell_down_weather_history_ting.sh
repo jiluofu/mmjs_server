@@ -21,8 +21,9 @@ rm -rf $output/*.wav
 #echo $url
 #echo $name
 # wget -O $output/$name $url
-weather_name=$time"_专家聊天气.mp4"
-weather_name_wav=$time"_专家聊天气.wav"
+weather_file_name=$time"_weather.mp3"
+weather_name=$time"_weather.mp4"
+weather_name_wav=$time"_weather.wav"
 echo $weather_name
 /home/zhuxu/mmjs_server/sh/py_weather_serial_ting.py $time
 #ffmpeg -y -i $url -ss 00:00:00 -to 00:30:30 $output/$weather_name
@@ -32,7 +33,7 @@ rm -rf $output/$weather_name
 
 
 /home/zhuxu/mmjs_server/sh/py_weather_serial.py $time
-echo $time"_专家聊天气his" | mailx -s $time"_天气和专家" -a $output/$weather_file_name  1077246@qq.com
+echo $time"_wearherhis" | s-nail -s $time"_wearher" -a $output/output/$weather_file_name  1077246@qq.com
 
  
 
