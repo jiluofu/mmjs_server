@@ -1,4 +1,4 @@
-#!/usr/bin/python36
+#!/home/zhuxu/vnev/bin/python3
 
 import sys
 import subprocess
@@ -57,10 +57,11 @@ shellPath = pre + '/mmjs_server/sh'
 
 
 def getMFCC(fileName, start = 0, len = None):
+	mfcc = 0
 	y, sr = librosa.load(fileName, offset = start, duration = len)
 	
 	try:
-		mfcc = librosa.feature.mfcc(y, sr)
+		mfcc = librosa.feature.mfcc(y = y, sr = sr)
 	except:
 		if y.size == 0:
 			return None
@@ -248,12 +249,12 @@ def output(date, secStart, secLength, name):
 	outputName = path + '/output/' + date + '_' + name + '.wav'
 	outputNameMp3 = path + '/output/' + date + '_' + name + '.mp3'
 	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -f wav ' + outputName, shell=True)
-	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -f mp3 ' + outputNameMp3, shell=True)
+	subprocess.check_output('ffmpeg -loglevel quiet -y -i ' + path + '/' + date + '_专家聊天气.wav -ss ' + str(secStart) + ' -to ' + str(secStart + secLength) + '  -ab 4k -f mp3 -acodec libmp3lame ' + outputNameMp3, shell=True)
 	title = date + '_' + name
 	#subprocess.check_output('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com', shell=True)
 	os.system('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com')
 	
-start = time.clock()
+start = time.time()
 # 天气开始
 # mfccTQ = getMFCC(shellPath + '/model_tq.wav')
 # 专家开始
@@ -268,7 +269,7 @@ else:
 	for i in range(0, len(arr)):
 		getWeather(arr[i])
 
-elapsed = (time.clock() - start)
+elapsed = (time.time() - start)
 print("Time used:", elapsed)
 
 

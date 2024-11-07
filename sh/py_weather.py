@@ -211,7 +211,7 @@ def getWeather(date):
 	secFinish = getSecPos(date, '专家聊天气', mfccFIN, shellPath + '/model_finish.wav', 7, secZj + 12 + 20, secZj + 12 + 30 + 500)
 	if secFinish > secZj and (secFinish - secZj - 10 < 350):
 		print('****find secFinish:' + str(secFinish))
-		output(date, secZj, secFinish - secZj - 10, '专家聊天气')
+		output(date, secZj, secFinish - secZj + 10, '专家聊天气')
 	else:
 		output(date, secZj, 350, '专家聊天气')
 	

@@ -1,0 +1,5 @@
+55 7 * * * nohup /home/zhuxu/mmjs_server/sh/shell_down_weather.sh &
+#45 8 * * * nohup /home/zhuxu/mmjs_server/sh/shell_down_weather_sendmail.sh &
+#51 9 * * * nohup /home/zhuxu/mmjs_server/sh/shell_down_weather_history_ting.sh &
+#55 9 * * * nohup /home/zhuxu/mmjs_server/sh/shell_down_weather_history_ting.sh &
+#05 10 * * * nohup /home/zhuxu/mmjs_server/sh/shell_down_weather_history_ting.sh &

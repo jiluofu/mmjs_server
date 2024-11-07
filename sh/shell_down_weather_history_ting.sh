@@ -26,7 +26,7 @@ weather_name_wav=$time"_专家聊天气.wav"
 echo $weather_name
 /home/zhuxu/mmjs_server/sh/py_weather_serial_ting.py $time
 #ffmpeg -y -i $url -ss 00:00:00 -to 00:30:30 $output/$weather_name
-ffmpeg -y -i $output/$weather_name -ss 00:27:00 -to 00:35:30 -ac 1 -ar 16000 $output/$weather_name_wav
+ffmpeg -y -i $output/$weather_name -ss 00:26:00 -to 00:34:30 -ac 1 -ar 16000 $output/$weather_name_wav
 rm -rf $output/$weather_name
 
 

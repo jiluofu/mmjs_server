@@ -1,4 +1,4 @@
-#!/usr/bin/python36
+#!/home/zhuxu/vnev/bin/python3
 
 import sys
 import subprocess
@@ -60,10 +60,11 @@ shellPath = pre + '/mmjs_server/sh'
 
 
 def getMFCC(fileName, start = 0, len = None):
+	mfcc = 0
 	y, sr = librosa.load(fileName, offset = start, duration = len)
 	
 	try:
-		mfcc = librosa.feature.mfcc(y, sr)
+		mfcc = librosa.feature.mfcc(y = y, sr = sr)
 	except:
 		if y.size == 0:
 			return None
@@ -224,7 +225,7 @@ def trim(str):
     return res;
 
 def getHistoryRes(date):
-    url = "https://api-v3.tingtingfm.com//albumaudio/play_audio?version=h5_5.8&client=h5_vLIwOyu3AAt9XwhHbVkZGFsK1GScVC&type=&sort=-1&audio_id=3aMvsXNDnJ&api_sign=4cda575d69ce05493a497fcd9d11f568"
+    url = "https://api-v3.tingtingfm.com//albumaudio/play_audio?version=h5_5.24&client=h5_1b48aff64fe4c08c775a8e14e41da52a&type=&sort=-1&audio_id=PorqsN44zd&api_sign=f52e16d37cc8f095754b6d4070dd6aa0"
     print(url)
     response = requests.get(url=url)
     jsondata = response.text
@@ -251,7 +252,7 @@ def getWeather(date):
 	secFinish = getSecPosSerial(date, '专家聊天气', mfccFIN, 7, secZj, secs)
 	print('secZj:' + str(secZj))
 	print('secFinish:' + str(secFinish))
-	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
+	output(date, secZj, secFinish - secZj + 10, '专家聊天气')
 	# if secFinish > secZj and (secFinish - secZj - 10 > 100):
 	# 	output(date, secZj, secFinish - secZj - 10, '专家聊天气')
 	# else:
@@ -267,7 +268,7 @@ def output(date, secStart, secLength, name):
 	#subprocess.check_output('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com', shell=True)
 	os.system('echo ' + title + ' | mailx -s ' + title + ' -a ' + outputNameMp3 + '  1077246@qq.com')
 	
-start = time.clock()
+start = time.time()
 # 天气开始
 # mfccTQ = getMFCC(shellPath + '/model_tq.wav')
 # 专家开始
@@ -279,7 +280,7 @@ mfccFIN = getMFCC(shellPath + '/model_finish.wav')
 if len(sys.argv) == 2 and sys.argv[1] != '':
 	getHistoryRes(sys.argv[1])
 
-elapsed = (time.clock() - start)
+elapsed = (time.time() - start)
 print("Time used:", elapsed)
 
 
