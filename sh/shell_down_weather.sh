@@ -41,7 +41,7 @@ ffmpeg -y -i $output/$weather_name  -ac 1 -ar 16000 $output/$weather_file_name_w
 #rm -rf $output/$weather_name
 
 /home/zhuxu/mmjs_server/sh/py_weather_serial.py $time
-echo $time"_weather" | mailx -s $time"_weather" -a $output/output/$weather_file_name  1077246@qq.com
+echo $time"_weather" | s-nail -s $time"_weather" -a $output/output/$weather_file_name  1077246@qq.com
 
  
 
